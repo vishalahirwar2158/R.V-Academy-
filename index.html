@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>R.V Academy</title>
 <style>
+* { box-sizing: border-box; }
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -16,7 +17,7 @@ header {
   background: #123b70;
   color: white;
   text-align: center;
-  padding: 25px 10px;
+  padding: 28px 12px;
 }
 header h1 { margin: 0; }
 main {
@@ -32,20 +33,20 @@ main {
   box-shadow: 0 2px 8px #0001;
 }
 h2 { color: #123b70; }
-input, button {
+input {
   width: 100%;
   padding: 12px;
   margin: 8px 0;
-  box-sizing: border-box;
+  border: 1px solid #aaa;
   border-radius: 7px;
 }
-input { border: 1px solid #aaa; }
-button {
-  background: #1764ad;
-  color: white;
-  border: none;
-  font-size: 16px;
+.note {
+  background: #f8fafc;
+  padding: 14px;
+  margin-top: 12px;
+  border-radius: 8px;
 }
+.note a { color: #1764ad; }
 footer {
   text-align: center;
   padding: 20px;
@@ -54,6 +55,7 @@ footer {
 </style>
 </head>
 <body>
+
 <header>
   <h1>R.V Academy</h1>
   <p>शिक्षा ही सफलता की कुंजी है</p>
@@ -68,13 +70,86 @@ footer {
   <section class="card">
     <h2>नोट्स खोजें</h2>
     <input id="search" placeholder="विषय या नोट्स खोजें">
-    <div id="notes">अभी कोई नोट्स उपलब्ध नहीं हैं।</div>
+    <div id="notes">नोट्स लोड हो रहे हैं...</div>
   </section>
 </main>
 
-<footer>
-  © 2026 R.V Academy
-</footer>
+<footer>© 2026 R.V Academy</footer>
+
+<script>
+const SUPABASE_URL = "sb_publishable_-ZSL0VFrrCGU3Ik20gUbLA_z8moJEdO";
+const SUPABASE_KEY = "sb_secret_LQ-0tSPBP_viyVKTQdZB5w_O1NaAkD1";
+
+let allNotes = [];
+
+async function loadNotes() {
+  const box = document.getElementById("notes");
+  try {
+    const response = await fetch(
+      SUPABASE_URL + "/rest/v1/notes?select=title,subject,description,file_url",
+      {
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": "Bearer " + SUPABASE_KEY
+        }
+      }
+    );
+
+    if (!response.ok) throw new Error("Load failed");
+    allNotes = await response.json();
+    showNotes();
+  } catch (error) {
+    box.textContent = "नोट्स लोड नहीं हो पाए। कृपया बाद में कोशिश करें।";
+  }
+}
+
+function showNotes() {
+  const search = document.getElementById("search").value.toLowerCase();
+  const box = document.getElementById("notes");
+
+  const filtered = allNotes.filter(n =>
+    (n.title || "").toLowerCase().includes(search) ||
+    (n.subject || "").toLowerCase().includes(search)
+  );
+
+  box.replaceChildren();
+
+  if (filtered.length === 0) {
+    box.textContent = "अभी कोई नोट्स उपलब्ध नहीं हैं।";
+    return;
+  }
+
+  filtered.forEach(n => {
+    const div = document.createElement("div");
+    div.className = "note";
+
+    const title = document.createElement("h3");
+    title.textContent = n.title || "बिना शीर्षक";
+
+    const subject = document.createElement("p");
+    subject.textContent = "विषय: " + (n.subject || "");
+
+    const desc = document.createElement("p");
+    desc.textContent = n.description || "";
+
+    div.append(title, subject, desc);
+
+    if (n.file_url) {
+      const link = document.createElement("a");
+      link.href = n.file_url;
+      link.textContent = "नोट्स देखें / डाउनलोड करें";
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      div.append(link);
+    }
+
+    box.append(div);
+  });
+}
+
+document.getElementById("search").addEventListener("input", showNotes);
+loadNotes();
+</script>
+
 </body>
-  </html>
-  
+</html>
