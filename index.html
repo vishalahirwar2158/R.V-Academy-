@@ -3,153 +3,164 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>R.V Academy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R.V Academy - Study Portal</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f1f5f9;
-  color: #172554;
-}
-header {
-  background: #123b70;
-  color: white;
-  text-align: center;
-  padding: 28px 12px;
-}
-header h1 { margin: 0; }
-main {
-  max-width: 700px;
-  margin: 25px auto;
-  padding: 15px;
-}
-.card {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  margin-bottom: 15px;
-  box-shadow: 0 2px 8px #0001;
-}
-h2 { color: #123b70; }
-input {
-  width: 100%;
-  padding: 12px;
-  margin: 8px 0;
-  border: 1px solid #aaa;
-  border-radius: 7px;
-}
-.note {
-  background: #f8fafc;
-  padding: 14px;
-  margin-top: 12px;
-  border-radius: 8px;
-}
-.note a { color: #1764ad; }
-footer {
-  text-align: center;
-  padding: 20px;
-  color: #555;
-}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f6fc;color:#17243b}
+header{background:#10234a;color:white;padding:18px 5%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.logo{font-size:25px;font-weight:bold}
+.logo span{color:#55c5ff}
+nav{display:flex;gap:15px;flex-wrap:wrap}
+nav a{color:white;text-decoration:none}
+.hero{padding:55px 7%;background:linear-gradient(120deg,#10234a,#1768c5);color:white}
+.hero h1{font-size:36px}
+.hero p{line-height:1.7;max-width:600px}
+button{background:#1266df;color:white;border:0;padding:12px 17px;border-radius:8px;cursor:pointer}
+.container{padding:30px 6%;max-width:1200px;margin:auto}
+h2{margin-bottom:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:15px}
+.subject,.note,.panel{background:white;border-radius:13px;padding:20px;box-shadow:0 3px 15px #182c4a12}
+.subject{text-align:center;cursor:pointer}
+.subject div{font-size:30px}
+.subject b{display:block;margin-top:10px}
+.search{display:flex;gap:8px;margin:15px 0 25px}
+input{width:100%;padding:13px;border:1px solid #d6deea;border-radius:8px;margin:7px 0}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.note p{color:#65738a;font-size:14px}
+.note a{color:#1266df;font-weight:bold}
+.panel{max-width:440px;margin:30px auto}
+.panel button{width:100%;margin-top:8px}
+footer{background:#10234a;color:white;text-align:center;padding:25px}
 </style>
 </head>
 <body>
-
 <header>
-  <h1>R.V Academy</h1>
-  <p>शिक्षा ही सफलता की कुंजी है</p>
+<div class="logo">R.V <span>ACADEMY</span></div>
+<nav>
+<a href="#home">Home</a>
+<a href="#subjects">Subjects</a>
+<a href="#notes">Notes</a>
+<a href="#account">Login</a>
+</nav>
 </header>
 
-<main>
-  <section class="card">
-    <h2>हमारी Academy में आपका स्वागत है!</h2>
-    <p>यहाँ विद्यार्थियों को पढ़ाई के नोट्स और अध्ययन सामग्री मिलेगी।</p>
-  </section>
+<section class="hero" id="home">
+<h1>Welcome to R.V Academy</h1>
+<p>आपकी पढ़ाई, आपकी तैयारी और आपकी सफलता का साथी। सभी विषयों के नोट्स एक ही जगह।</p>
+<button onclick="document.getElementById('subjects').scrollIntoView({behavior:'smooth'})">Explore Notes</button>
+</section>
 
-  <section class="card">
-    <h2>नोट्स खोजें</h2>
-    <input id="search" placeholder="विषय या नोट्स खोजें">
-    <div id="notes">नोट्स लोड हो रहे हैं...</div>
-  </section>
+<main class="container">
+<h2 id="subjects">📚 हमारे विषय</h2>
+<div class="grid">
+<div class="subject" onclick="choose('Hindi')"><div>📖</div><b>हिंदी</b></div>
+<div class="subject" onclick="choose('English')"><div>🔤</div><b>English</b></div>
+<div class="subject" onclick="choose('Math')"><div>➗</div><b>गणित</b></div>
+<div class="subject" onclick="choose('Reasoning')"><div>🧠</div><b>Reasoning</b></div>
+<div class="subject" onclick="choose('GS')"><div>🌍</div><b>सामान्य ज्ञान</b></div>
+<div class="subject" onclick="choose('Current Affairs')"><div>📰</div><b>Current Affairs</b></div>
+</div>
+
+<h2 id="notes" style="margin-top:40px">📚 सभी नोट्स</h2>
+<div class="search">
+<input id="search" placeholder="Notes खोजें..." oninput="showNotes()">
+<button onclick="showNotes()">खोजें</button>
+</div>
+<div id="notesList" class="notes">नोट्स लोड हो रहे हैं...</div>
+
+<section id="account" class="panel">
+<h2 style="text-align:center">👤 Student Account</h2>
+<p style="text-align:center">Email से Registration या Login</p>
+<input id="email" type="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password (कम से कम 6 अक्षर)">
+<button onclick="register()">Create Account</button>
+<button onclick="login()" style="background:#172b50">Login</button>
+<button onclick="logout()" style="background:#68768c">Logout</button>
+<p id="message"></p>
+</section>
 </main>
 
-<footer>© 2026 R.V Academy</footer>
+<footer>
+<h3>R.V Academy</h3>
+<p>Learn • Practice • Succeed</p>
+<p>© 2026 R.V Academy</p>
+</footer>
 
 <script>
-const SUPABASE_URL = "sb_publishable_-ZSL0VFrrCGU3Ik20gUbLA_z8moJEdO";
-const SUPABASE_KEY = "sb_secret_LQ-0tSPBP_viyVKTQdZB5w_O1NaAkD1";
+const SUPABASE_URL="sb_publishable_V2-eIBp68Qg6cEVi-G2XBw_MVZzGEOl";
+const SUPABASE_KEY="sb_secret_YAYP6QaQL5i9d37xfvKD9A_5RtcKYt8";
+let db=null,allNotes=[],selected="";
 
-let allNotes = [];
-
-async function loadNotes() {
-  const box = document.getElementById("notes");
-  try {
-    const response = await fetch(
-      SUPABASE_URL + "/rest/v1/notes?select=title,subject,description,file_url",
-      {
-        headers: {
-          "apikey": SUPABASE_KEY,
-          "Authorization": "Bearer " + SUPABASE_KEY
-        }
-      }
-    );
-
-    if (!response.ok) throw new Error("Load failed");
-    allNotes = await response.json();
-    showNotes();
-  } catch (error) {
-    box.textContent = "नोट्स लोड नहीं हो पाए। कृपया बाद में कोशिश करें।";
-  }
+if(window.supabase && SUPABASE_URL.startsWith("https://") &&
+SUPABASE_KEY.startsWith("sb_publishable_")){
+db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 }
 
-function showNotes() {
-  const search = document.getElementById("search").value.toLowerCase();
-  const box = document.getElementById("notes");
-
-  const filtered = allNotes.filter(n =>
-    (n.title || "").toLowerCase().includes(search) ||
-    (n.subject || "").toLowerCase().includes(search)
-  );
-
-  box.replaceChildren();
-
-  if (filtered.length === 0) {
-    box.textContent = "अभी कोई नोट्स उपलब्ध नहीं हैं।";
-    return;
-  }
-
-  filtered.forEach(n => {
-    const div = document.createElement("div");
-    div.className = "note";
-
-    const title = document.createElement("h3");
-    title.textContent = n.title || "बिना शीर्षक";
-
-    const subject = document.createElement("p");
-    subject.textContent = "विषय: " + (n.subject || "");
-
-    const desc = document.createElement("p");
-    desc.textContent = n.description || "";
-
-    div.append(title, subject, desc);
-
-    if (n.file_url) {
-      const link = document.createElement("a");
-      link.href = n.file_url;
-      link.textContent = "नोट्स देखें / डाउनलोड करें";
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      div.append(link);
-    }
-
-    box.append(div);
-  });
+function safe(v){
+return String(v??"").replace(/[&<>"']/g,c=>({
+"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+}[c]));
+}
+function safeURL(v){
+try{let u=new URL(v);return u.protocol==="https:"?safe(v):""}
+catch(e){return ""}
 }
 
-document.getElementById("search").addEventListener("input", showNotes);
+async function loadNotes(){
+if(!db){document.getElementById("notesList").textContent="Supabase जानकारी सेट नहीं है।";return}
+let {data,error}=await db.from("notes").select("title,subject,description,file_url");
+if(error){document.getElementById("notesList").textContent="नोट्स लोड नहीं हो पाए।";return}
+allNotes=data||[];
+showNotes();
+}
+
+function showNotes(){
+let q=document.getElementById("search").value.toLowerCase();
+let filtered=allNotes.filter(n=>
+(n.title+" "+n.subject+" "+(n.description||"")).toLowerCase().includes(q)&&
+(!selected||n.subject===selected));
+let area=document.getElementById("notesList");
+if(!filtered.length){area.textContent="अभी कोई नोट्स उपलब्ध नहीं हैं।";return}
+area.innerHTML=filtered.map(n=>`
+<div class="note">
+<h3>${safe(n.title)}</h3>
+<p>विषय: ${safe(n.subject)}</p>
+<p>${safe(n.description||"अध्ययन सामग्री")}</p>
+${safeURL(n.file_url)?`<a href="${safeURL(n.file_url)}" target="_blank" rel="noopener">📥 PDF देखें / Download</a>`:"PDF लिंक उपलब्ध नहीं"}
+</div>`).join("");
+}
+
+function choose(s){
+selected=selected===s?"":s;
+document.getElementById("search").value="";
+document.getElementById("notes").scrollIntoView({behavior:"smooth"});
+showNotes();
+}
+function say(t){document.getElementById("message").textContent=t}
+
+async function register(){
+if(!db)return say("Supabase सेटिंग जाँचें");
+let email=document.getElementById("email").value.trim();
+let password=document.getElementById("password").value;
+if(!email||password.length<6)return say("Email और कम से कम 6 अक्षर का Password भरें");
+let {error}=await db.auth.signUp({email,password});
+say(error?error.message:"Registration अनुरोध भेज दिया गया। Email जाँचें।");
+}
+async function login(){
+if(!db)return say("Supabase सेटिंग जाँचें");
+let email=document.getElementById("email").value.trim();
+let password=document.getElementById("password").value;
+let {error}=await db.auth.signInWithPassword({email,password});
+say(error?error.message:"Login सफल हुआ");
+}
+async function logout(){
+if(!db)return;
+let {error}=await db.auth.signOut();
+say(error?error.message:"Logout हो गया");
+}
 loadNotes();
 </script>
-
 </body>
 </html>
